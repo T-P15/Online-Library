@@ -6,7 +6,7 @@ import {
   Col
 } from 'react-bootstrap';
 import {GET_ME} from '../utils/queries'
-import {DELETE_BOOK} from '../utils/mutations'
+import {REMOVE_BOOK} from '../utils/mutations'
 import { deleteBook } from '../utils/API';
 import Auth from '../utils/auth';
 import { removeBookId } from '../utils/localStorage';
@@ -17,7 +17,7 @@ const SavedBooks = () => {
 
   const userData = data?.me || {};
 
-  const [deleteBook, {error}] = useMutation(DELETE_BOOK);
+  const [deleteBook, {error}] = useMutation(REMOVE_BOOK);
 
   // create function that accepts the book's mongo _id value as param and deletes the book from the database
   const handleDeleteBook = async (bookId) => {

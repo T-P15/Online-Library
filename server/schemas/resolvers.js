@@ -6,27 +6,30 @@ const resolvers = {
     Query: {
         me: async (parent, args, context) => {
             if (context.user) {
-            return User.findOne({ _id: context.user._id }).populate('thoughts');
+            const userData = await User.findOne({ _id: context.user._id })
+
+            return userData;
             }
             throw AuthenticationError;
         },
 
 },
     Mutation: {
-        addUser: async (parent, { username, email, password }) => {
-            const user = await User.create({ username, email, password });
+        addUser: async (parent, args) => {
+            const user = await User.create({args});
             const token = signToken(user);
             return { token, user };
           },
 
-          login: async (parent, { email, password }) => {
-            const user = await User.findOne({ email });
+          login: async (parent, args) => {
+            const user = await User.findOne({ 
+              $or: [{username: args.username}, {email: args.email}], });
       
             if (!user) {
               throw AuthenticationError;
             }
       
-            const correctPw = await user.isCorrectPassword(password);
+            const correctPw = await user.isCorrectPassword(args.password);
       
             if (!correctPw) {
               throw AuthenticationError;
@@ -37,10 +40,10 @@ const resolvers = {
             return { token, user };
           },
 
-          saveBook: async (parent, { userId, args }, context) => {
+          saveBook: async (parent, args , context) => {
             if (context.user) {
               return User.findOneAndUpdate(
-                { _id: userId },
+                { _id: context.user._id },
                 {
                   $addToSet: {
                     savedBooks: { input: args },
@@ -55,14 +58,14 @@ const resolvers = {
             throw AuthenticationError;
           },
 
-          removeBook: async (parent, { userId, bookId }, context) => {
+          removeBook: async (parent, args , context) => {
             if (context.user) {
               return User.findOneAndUpdate(
-                { _id: userId },
+                { _id: context.user._id },
                 {
                   $pull: {
                     savedBooks: {
-                      bookId: bookId
+                      bookId: args.bookId
                     },
                   },
                 },
@@ -72,4 +75,6 @@ const resolvers = {
             throw AuthenticationError;
           },
     }
-}
+};
+
+module.exports = resolvers

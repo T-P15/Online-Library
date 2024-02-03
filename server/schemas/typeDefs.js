@@ -1,4 +1,4 @@
-const typeDefs = `#graphql
+const typeDefs = `
 type Auth {
     token: ID!
     user: User
@@ -17,7 +17,7 @@ type Auth {
     _id: ID
     username: String
     email: String
-    bookCount: String
+    bookCount: Int
     savedBooks: [Book]
   }
 
@@ -31,14 +31,16 @@ type Auth {
   }
 
   type Query {
-    me: [User]
+    me: User
   }
 
   type Mutation {
-    addUser(username: String!,email: String!, password: String!): Auth
-    login(email: String!, password: String!): Auth
+    addUser(username: String! email: String! password: String!): Auth
+    login(username: String email: String password: String!): Auth
     saveBook(input: BookInput): User
-    removeBook(userId: ID!, bookId: String!): User
+    removeBook(bookId: String!): User
   }
 
 `
+
+module.exports = typeDefs
